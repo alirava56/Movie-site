@@ -1,0 +1,449 @@
+{
+  "id": "6a24b78c-a040-4252-b628-753b0ef81e9f",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.accounts": {
+      "name": "accounts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(128)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "account_owns_row": {
+          "name": "account_owns_row",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "\"accounts\".\"id\" = nullif(current_setting('didamesh.account_id', true), '')",
+          "withCheck": "\"accounts\".\"id\" = nullif(current_setting('didamesh.account_id', true), '')"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.catalog_titles": {
+      "name": "catalog_titles",
+      "schema": "",
+      "columns": {
+        "imdb_id": {
+          "name": "imdb_id",
+          "type": "varchar(14)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(300)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "media_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "year": {
+          "name": "year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "poster": {
+          "name": "poster",
+          "type": "varchar(2048)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "genre": {
+          "name": "genre",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "overview": {
+          "name": "overview",
+          "type": "varchar(2000)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "imdb_rating": {
+          "name": "imdb_rating",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "catalog_imdb_id_format": {
+          "name": "catalog_imdb_id_format",
+          "value": "\"catalog_titles\".\"imdb_id\" ~ '^tt[0-9]{7,12}$'"
+        },
+        "catalog_year_range": {
+          "name": "catalog_year_range",
+          "value": "\"catalog_titles\".\"year\" between 1000 and 9999"
+        },
+        "catalog_rating_range": {
+          "name": "catalog_rating_range",
+          "value": "\"catalog_titles\".\"imdb_rating\" between 0 and 10"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.library_items": {
+      "name": "library_items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "account_id": {
+          "name": "account_id",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "imdb_id": {
+          "name": "imdb_id",
+          "type": "varchar(14)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(300)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "search_title": {
+          "name": "search_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "media_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "year": {
+          "name": "year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "poster": {
+          "name": "poster",
+          "type": "varchar(2048)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "status": {
+          "name": "status",
+          "type": "library_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "my_rating": {
+          "name": "my_rating",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "watched_at": {
+          "name": "watched_at",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "note": {
+          "name": "note",
+          "type": "varchar(16000)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "added_at": {
+          "name": "added_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "library_account_recent": {
+          "name": "library_account_recent",
+          "columns": [
+            {
+              "expression": "account_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "added_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "library_items_account_id_accounts_id_fk": {
+          "name": "library_items_account_id_accounts_id_fk",
+          "tableFrom": "library_items",
+          "tableTo": "accounts",
+          "columnsFrom": [
+            "account_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "library_items_imdb_id_catalog_titles_imdb_id_fk": {
+          "name": "library_items_imdb_id_catalog_titles_imdb_id_fk",
+          "tableFrom": "library_items",
+          "tableTo": "catalog_titles",
+          "columnsFrom": [
+            "imdb_id"
+          ],
+          "columnsTo": [
+            "imdb_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "library_account_imdb_unique": {
+          "name": "library_account_imdb_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "account_id",
+            "imdb_id"
+          ]
+        }
+      },
+      "policies": {
+        "account_owns_row": {
+          "name": "account_owns_row",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "\"library_items\".\"account_id\" = nullif(current_setting('didamesh.account_id', true), '')",
+          "withCheck": "\"library_items\".\"account_id\" = nullif(current_setting('didamesh.account_id', true), '')"
+        }
+      },
+      "checkConstraints": {
+        "library_year_range": {
+          "name": "library_year_range",
+          "value": "\"library_items\".\"year\" between 1000 and 9999"
+        },
+        "library_rating_range": {
+          "name": "library_rating_range",
+          "value": "\"library_items\".\"my_rating\" between 1 and 5"
+        },
+        "library_version_positive": {
+          "name": "library_version_positive",
+          "value": "\"library_items\".\"version\" > 0"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.library_request_keys": {
+      "name": "library_request_keys",
+      "schema": "",
+      "columns": {
+        "account_id": {
+          "name": "account_id",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "request_key": {
+          "name": "request_key",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fingerprint": {
+          "name": "fingerprint",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "item_id": {
+          "name": "item_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "library_request_age": {
+          "name": "library_request_age",
+          "columns": [
+            {
+              "expression": "account_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "library_request_keys_account_id_accounts_id_fk": {
+          "name": "library_request_keys_account_id_accounts_id_fk",
+          "tableFrom": "library_request_keys",
+          "tableTo": "accounts",
+          "columnsFrom": [
+            "account_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "library_request_keys_account_id_request_key_pk": {
+          "name": "library_request_keys_account_id_request_key_pk",
+          "columns": [
+            "account_id",
+            "request_key"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {
+        "account_owns_row": {
+          "name": "account_owns_row",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "\"library_request_keys\".\"account_id\" = nullif(current_setting('didamesh.account_id', true), '')",
+          "withCheck": "\"library_request_keys\".\"account_id\" = nullif(current_setting('didamesh.account_id', true), '')"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    }
+  },
+  "enums": {
+    "public.library_status": {
+      "name": "library_status",
+      "schema": "public",
+      "values": [
+        "watch",
+        "watched"
+      ]
+    },
+    "public.media_kind": {
+      "name": "media_kind",
+      "schema": "public",
+      "values": [
+        "movie",
+        "series"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

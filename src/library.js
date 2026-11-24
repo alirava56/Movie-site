@@ -53,7 +53,7 @@ export function localDate(now = new Date()) {
   return `${now.getFullYear()}-${month}-${day}`;
 }
 
-function normalizeDate(value) {
+export function normalizeDate(value) {
   if (typeof value !== "string") return "";
   const date = latinDigits(value.trim());
   if (!/^[1-9]\d{3}-\d{2}-\d{2}$/u.test(date)) return "";

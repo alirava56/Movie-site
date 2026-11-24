@@ -60,7 +60,7 @@ function unique(items) {
   return [...byKey.values()];
 }
 
-async function readJson(response) {
+export async function readJson(response) {
   if (!response.ok || !response.body) throw new Error("Catalog response failed");
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -94,7 +94,7 @@ function releaseYear(value) {
   return String(value).match(/^\d{4}/u)?.[0];
 }
 
-function fromCinemeta(record, kind) {
+export function fromCinemeta(record, kind) {
   if (!record || typeof record !== "object") return null;
   const year = releaseYear(record.year) ?? releaseYear(record.releaseInfo);
   const genres = Array.isArray(record.genres) ? record.genres.filter((value) => typeof value === "string").slice(0, 3).join(", ") : record.genre;

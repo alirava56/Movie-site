@@ -3,17 +3,17 @@ import { readFile } from "node:fs/promises";
 import { request } from "node:http";
 import { once } from "node:events";
 import test from "node:test";
-import { createDidameshServer } from "../server/http.js";
+import { createDidameshServer } from "../server/http.ts";
 
 const html = await readFile(new URL("../didamesh (3).html", import.meta.url), "utf8");
 const emptyPage = { items: [], nextOffset: null, source: "cinemeta" };
 
 async function host(t, load) {
   const logs = [];
-  const server = createDidameshServer({ html, load, logger: { warn: (...args) => logs.push(args) } });
-  server.listen(0, "127.0.0.1");
-  await once(server, "listening");
-  t.after(() => new Promise((resolve) => server.close(resolve)));
+  const app = createDidameshServer({ html, load, logger: { warn: (...args) => logs.push(args) } });
+  await app.listen({ port: 0, host: "127.0.0.1" });
+  t.after(() => app.close());
+  const server = app.server;
   return { port: server.address().port, root: `http://127.0.0.1:${server.address().port}`, logs, server };
 }
 
@@ -28,6 +28,11 @@ test("server serves the built app with restrictive headers and validates API inp
   assert.match(app.headers.get("content-security-policy"), /connect-src 'self';/u);
   assert.match(app.headers.get("content-security-policy"), /frame-ancestors 'none'/u);
   assert.match(await app.text(), /دیدمش!/u);
+  for (const path of ["/didamesh%20(3).html", "/didamesh%20%283%29.html"]) {
+    const named = await fetch(`${root}${path}`);
+    assert.equal(named.status, 200);
+    assert.equal(await named.text(), html);
+  }
   const health = await fetch(`${root}/healthz`);
   assert.deepEqual(await health.json(), { status: "ok" });
 
