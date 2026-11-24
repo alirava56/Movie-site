@@ -1,0 +1,3 @@
+node_modules/
+*.tmp
+didamesh-backup*.json

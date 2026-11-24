@@ -1,0 +1,2 @@
+# Keep HTML content hashes valid on Windows checkouts.
+*.html text eol=lf
